@@ -96,20 +96,30 @@ function VehiclesTax()
     MySQL.query(Config.VehicleSQL.query, {}, function(vehicles)
         for src, player in pairs(players) do
             if player then
-                local vehicleCount = 0
+                local totalTax = 0
                 local citizenid = player.citizenid
                 if isTaxWaivedOff(citizenid) then goto skip end
+                
                 for i = 1, #vehicles, 1 do
                     if citizenid == vehicles[i][Config.VehicleSQL.identifier] then
-                        vehicleCount = vehicleCount + 1
+                        local vehicleCategory = vehicles[i].category
+                        local vehiclePrice = vehicles[i].price
+                        
+                        for _, taxBracket in pairs(Config.VehicleTax) do
+                            if taxBracket.bracket == vehicleCategory then
+                                local tax = math.floor(vehiclePrice * (taxBracket.percentage / 100))
+                                totalTax = totalTax + tax
+                                break
+                            end
+                        end
                     end
                 end
-                if vehicleCount > 0 then
-                    local tax = math.floor(vehicleCount * Config.VehicleTax)
-                    player.removeMoney("bank", tax, "vehicletax")
-                    accountAmount = accountAmount + tax
-                    notification(player.source, string.format(Language('vehicle_taxed'), tax))
-                    sendLog(src, string.format(Language('vehicle_taxed_log'), citizenid, tax))
+                
+                if totalTax > 0 then
+                    player.removeMoney("bank", totalTax, "vehicletax")
+                    accountAmount = accountAmount + totalTax
+                    notification(player.source, string.format(Language('vehicle_taxed'), totalTax))
+                    sendLog(src, string.format(Language('vehicle_taxed_log'), citizenid, totalTax))
                 end
             end
             ::skip::
