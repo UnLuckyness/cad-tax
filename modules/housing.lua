@@ -13,4 +13,9 @@ elseif GetResourceState('nolag_properties') == 'started' then
         query = 'SELECT * FROM properties_owners',
         identifier = 'identifier'
     }
+elseif GetResourceState('qs-housing') == 'started' then
+    Config.PropertySQL = {
+        query = 'SELECT * FROM player_houses',
+        identifier = 'citizenid'
+    }
 end

@@ -11,6 +11,8 @@ function AddMoneyToAccount(amount, reason)
         return exports['okokBanking']:AddMoney(Config.TaxesAccount.accountName, Config.TaxesAccount.accountId)
     elseif GetResourceState('tgg-banking') == 'started' then
         return exports['tgg-banking']:AddSocietyMoney(Config.TaxesAccount.accountName, Config.TaxesAccount.accountId)
+    elseif GetResourceState('fd_banking') == 'started' then
+        return exports.fd_banking:AddMoney(Config.TaxesAccount.accountName, amount, reason)
     else
         print("NO BANKING CONFIGURED")
         return false
